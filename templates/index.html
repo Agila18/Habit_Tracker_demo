@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracker Lite — Daily Habit Tracker</title>
+    <meta name="description" content="A lightweight, beginner-friendly habit tracking application to build and track daily routines with ease.">
+    
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- App Container -->
+    <div class="app-wrapper">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-brand">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="brand-title">Habit Tracker Lite</h1>
+                    <p class="brand-subtitle">Small daily steps lead to remarkable results</p>
+                </div>
+            </div>
+            <div class="header-date" id="current-date-badge">
+                <span class="date-icon">📅</span>
+                <span id="current-date-text">Today</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Progress & Stats Overview -->
+            <section class="stats-card" aria-label="Daily Progress Overview">
+                <div class="stats-header">
+                    <div>
+                        <h2 class="stats-title">Today's Progress</h2>
+                        <p class="stats-motivation" id="stats-motivation-text">Loading your habits...</p>
+                    </div>
+                    <div class="stats-badge" id="percentage-badge">0%</div>
+                </div>
+
+                <!-- Visual Progress Bar -->
+                <div class="progress-bar-container" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="progress-bar-wrapper">
+                    <div class="progress-bar-fill" id="progress-bar-fill" style="width: 0%;"></div>
+                </div>
+
+                <!-- Metric Cards Grid -->
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <div class="metric-icon metric-icon-total">📋</div>
+                        <div class="metric-content">
+                            <span class="metric-value" id="total-habits-count">0</span>
+                            <span class="metric-label">Total Habits</span>
+                        </div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-icon metric-icon-completed">✅</div>
+                        <div class="metric-content">
+                            <span class="metric-value" id="completed-habits-count">0</span>
+                            <span class="metric-label">Completed Today</span>
+                        </div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-icon metric-icon-pending">⏳</div>
+                        <div class="metric-content">
+                            <span class="metric-value" id="pending-habits-count">0</span>
+                            <span class="metric-label">Remaining Today</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Create New Habit Section -->
+            <section class="add-habit-card" aria-label="Add New Habit">
+                <h2 class="section-title">
+                    <span class="section-icon">✨</span> Add a New Habit
+                </h2>
+                <form id="add-habit-form" class="habit-form" novalidate>
+                    <div class="form-group">
+                        <label for="habit-name" class="form-label">
+                            Habit Name <span class="required-star">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="habit-name" 
+                            name="name" 
+                            class="form-input" 
+                            placeholder="e.g., Read 20 pages, 30 min morning walk, Drink 2L water..." 
+                            maxlength="100" 
+                            required
+                            autocomplete="off"
+                        >
+                        <div class="input-meta">
+                            <span class="field-error" id="name-error-message"></span>
+                            <span class="char-counter" id="name-char-counter">0 / 100</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="habit-desc" class="form-label">
+                            Description <span class="optional-tag">(Optional)</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="habit-desc" 
+                            name="description" 
+                            class="form-input" 
+                            placeholder="e.g., Right after breakfast to stay focused and calm..." 
+                            maxlength="300"
+                            autocomplete="off"
+                        >
+                        <div class="input-meta">
+                            <span class="field-error" id="desc-error-message"></span>
+                            <span class="char-counter" id="desc-char-counter">0 / 300</span>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="add-habit-btn">
+                            <svg class="btn-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            <span>Add Habit</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Habits List Section -->
+            <section class="habits-section" aria-label="Habits List">
+                <div class="habits-section-header">
+                    <h2 class="section-title">
+                        <span class="section-icon">🎯</span> Your Daily Habits
+                    </h2>
+                    <span class="habits-counter-pill" id="habits-counter-pill">0 habits</span>
+                </div>
+
+                <!-- Loading State Skeleton -->
+                <div class="loading-state" id="loading-state">
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                </div>
+
+                <!-- Empty State Message -->
+                <div class="empty-state" id="empty-state" style="display: none;">
+                    <div class="empty-icon">🌱</div>
+                    <h3 class="empty-title">No habits tracked yet!</h3>
+                    <p class="empty-subtitle">
+                        Every big accomplishment starts with a small daily routine.<br>
+                        Add your first habit using the form above to begin your journey.
+                    </p>
+                </div>
+
+                <!-- Habit Cards Container -->
+                <div class="habits-grid" id="habits-container" style="display: none;">
+                    <!-- Rendered dynamically by static/js/app.js -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>Habit Tracker Lite &bull; Built with Flask, SQLite &amp; Vanilla JavaScript</p>
+        </footer>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-backdrop" id="delete-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-warning-icon">⚠️</div>
+                <h3 class="modal-title" id="modal-title">Delete Habit?</h3>
+            </div>
+            <p class="modal-body" id="modal-body-text">
+                Are you sure you want to delete this habit? All recorded completion history will be permanently deleted.
+            </p>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="modal-cancel-btn">Cancel</button>
+                <button type="button" class="btn btn-danger" id="modal-confirm-btn">
+                    <span>Delete Habit</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+    <!-- Application JavaScript -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
