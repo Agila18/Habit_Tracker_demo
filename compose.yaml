@@ -1,0 +1,14 @@
+services:
+  habit-tracker:
+    build: .
+    container_name: habit-tracker
+    ports:
+      - "5000:5000"
+    volumes:
+      - habit_data:/app/instance
+    environment:
+      DB_PATH: /app/instance/habits.db
+    restart: unless-stopped
+
+volumes:
+  habit_data:
